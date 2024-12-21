@@ -5,43 +5,86 @@ using UnityEngine.UIElements;
 
 public class PendulumScript : CustomPhysicsBase
 {
-    [SerializeField] float test;
-    [SerializeField] Transform targetTransform;
+    [SerializeField] Transform m_targetTransform;
 
-    #region variables
-    [SerializeField] float angleBetweenPoints;
-    
+    #region inspector variables
+    [SerializeField] float m_angleBetweenPoints;
+    [SerializeField] float m_divider;
+
+    #endregion
+
+    #region private variables
+    float m_ropeLength;
+    Vector3 m_startPosition;
+    Vector3 m_directionFacingPivot;
     #endregion
     // Start is called before the first frame update
     void Start()
     {
-        
+        SetVariables();
     }
+    
 
    // Update is called once per frame
     void Update()
     {
-        DrawLineBetweenPoints();
+        DrawDebugLines();
+
+        if(Vector3.Distance(m_targetTransform.position, this.transform.position) >= m_ropeLength)
+        {
+            SetForce(CalculateForceDirection() * CalculateNetForce() / m_divider , ForceMode.Force);
+        }    
     }
 
-    void CalculateAcuteAngle()
+    public override void SetVariables()
     {
-        //calculates angle based on equation
-        Vector3 _targetPosition = targetTransform.position;
-        
+        base.SetVariables();
+        m_startPosition = this.transform.position;
+        m_ropeLength = Vector3.Distance( m_targetTransform.position, this.transform.position);
+    }
+
+
+
+    float CalculateAngle()
+    {
+
+        float _angle = Vector3.Angle(this.transform.position - m_targetTransform.position, Physics.gravity.normalized);
+        return Mathf.Deg2Rad * _angle;
 
     }
 
-    void CalculateLineEquation()
+    float CalculateCentripetalForce()
     {
-        float angle = Vector3.Angle(this.transform.position - targetTransform.position, Physics.gravity.normalized);
-        print(angle);
+        float a = Mathf.Pow( (m_rigidBody.mass * m_rigidBody.velocity.magnitude), 2);
+        float b = a / m_ropeLength;
+        return b;
     }
 
-    void DrawLineBetweenPoints()
+    float CalculateTensionForce()
     {
-        Debug.DrawLine(this.gameObject.transform.position, targetTransform.position, Color.blue);
+        float a = m_rigidBody.mass * Physics.gravity.magnitude;
+        float b = Mathf.Cos(CalculateAngle());
+        float c = a * b;
+        return c;
+    }
+
+    float CalculateNetForce()
+    {
+        float a = CalculateTensionForce() + CalculateCentripetalForce();
+        return a;
+    }
+
+    Vector3 CalculateForceDirection()
+    {
+
+        Vector3 a = (m_targetTransform.position - this.transform.position).normalized;
+        return a;
+    }
+
+    void DrawDebugLines()
+    {
+        Debug.DrawLine(this.gameObject.transform.position, m_targetTransform.position, Color.blue);
         Debug.DrawLine(Vector3.zero, Vector3.up * 50, Color.red);
-        CalculateLineEquation();
+
     }
 }

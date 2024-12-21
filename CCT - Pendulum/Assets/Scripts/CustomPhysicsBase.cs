@@ -5,9 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class CustomPhysicsBase : MonoBehaviour
 {
-    Rigidbody m_rigidBody;
+    protected Rigidbody m_rigidBody;
     [SerializeField] float m_mass;
-    [SerializeField] float m_GravityScale;
+    [SerializeField] float m_gravityScale;
 
     void Awake()
     {
@@ -17,6 +17,7 @@ public class CustomPhysicsBase : MonoBehaviour
     public virtual void SetVariables()
     {
         m_rigidBody.mass = m_mass;
+        
     }
 
     public virtual Vector3 CalculateForce()
