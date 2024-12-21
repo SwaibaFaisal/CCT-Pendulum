@@ -33,7 +33,7 @@ public class PendulumScript : CustomPhysicsBase
         if(Vector3.Distance(m_targetTransform.position, this.transform.position) >= m_ropeLength)
         {
             SetForce(CalculateForceDirection() * CalculateNetForce() / m_divider , ForceMode.Force);
-        }    
+        }
     }
 
     public override void SetVariables()
@@ -47,10 +47,8 @@ public class PendulumScript : CustomPhysicsBase
 
     float CalculateAngle()
     {
-
         float _angle = Vector3.Angle(this.transform.position - m_targetTransform.position, Physics.gravity.normalized);
         return Mathf.Deg2Rad * _angle;
-
     }
 
     float CalculateCentripetalForce()
