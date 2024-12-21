@@ -9,7 +9,9 @@ public class PendulumScript : CustomPhysicsBase
 
     #region inspector variables
     [SerializeField] float m_angleBetweenPoints;
-    [SerializeField] float m_divider;
+    [SerializeField] float m_timeMultiplier;
+    [SerializeField] float m_multiplier;
+
 
     #endregion
 
@@ -29,10 +31,11 @@ public class PendulumScript : CustomPhysicsBase
     void Update()
     {
         DrawDebugLines();
+        float m_frameRateMultiplier = m_timeMultiplier * Time.deltaTime;
 
         if(Vector3.Distance(m_targetTransform.position, this.transform.position) >= m_ropeLength)
         {
-            SetForce(CalculateForceDirection() * CalculateNetForce() / m_divider , ForceMode.Force);
+            SetForce( (CalculateForceDirection() * CalculateNetForce() * m_multiplier ) * m_frameRateMultiplier, ForceMode.Force);
         }
     }
 

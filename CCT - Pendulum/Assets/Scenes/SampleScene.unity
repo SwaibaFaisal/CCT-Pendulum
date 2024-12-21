@@ -534,11 +534,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 019ce818d3beed040a2ac6f483270f65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_mass: 0.3
+  m_mass: 1
   m_gravityScale: 0
   m_targetTransform: {fileID: 1754982785}
   m_angleBetweenPoints: 0
-  m_divider: 2
+  m_timeMultiplier: 60
+  m_multiplier: 1
 --- !u!54 &1237504515
 Rigidbody:
   m_ObjectHideFlags: 0
