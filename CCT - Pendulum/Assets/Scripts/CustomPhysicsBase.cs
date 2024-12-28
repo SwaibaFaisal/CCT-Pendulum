@@ -8,8 +8,9 @@ public class CustomPhysicsBase : MonoBehaviour
     protected Rigidbody m_rigidBody;
     [SerializeField] float m_mass;
     [SerializeField] float m_gravityScale;
+    [SerializeField] bool m_interpolate;
 
-    void Awake()
+    public virtual void Awake()
     {
         m_rigidBody = this.GetComponent<Rigidbody>();
     }
@@ -17,6 +18,11 @@ public class CustomPhysicsBase : MonoBehaviour
     public virtual void SetVariables()
     {
         m_rigidBody.mass = m_mass;
+        if(m_interpolate) 
+        {
+            m_rigidBody.interpolation = RigidbodyInterpolation.Interpolate;
+        }
+        
         
     }
 

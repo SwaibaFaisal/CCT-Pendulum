@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -10,7 +11,12 @@ public class PendulumScript : CustomPhysicsBase
     #region inspector variables
     [SerializeField] float m_angleBetweenPoints;
     [SerializeField] float m_timeMultiplier;
+    
     [SerializeField] float m_multiplier;
+    [SerializeField] bool m_HigherTimeStep;
+    [Tooltip("Fixed Delta Time value. Default value is set to 1/50, reccomended value is 1/60")]
+    [SerializeField] float m_AlternateTimeStepValue;
+    [SerializeField] bool m_isSwinging;
 
 
     #endregion
@@ -20,23 +26,30 @@ public class PendulumScript : CustomPhysicsBase
     Vector3 m_startPosition;
     Vector3 m_directionFacingPivot;
     #endregion
-    // Start is called before the first frame update
-    void Start()
+
+
+    public override void Awake()
     {
+        base.Awake();
+        if ( m_HigherTimeStep ) 
+        {
+            Time.fixedDeltaTime = m_AlternateTimeStepValue;
+        }
         SetVariables();
     }
-    
 
-   // Update is called once per frame
-    void Update()
+    // Update is called once per frame
+    void FixedUpdate()
     {
-        DrawDebugLines();
         float m_frameRateMultiplier = m_timeMultiplier * Time.deltaTime;
-
-        if(Vector3.Distance(m_targetTransform.position, this.transform.position) >= m_ropeLength)
+        if(m_isSwinging)
         {
-            SetForce( (CalculateForceDirection() * CalculateNetForce() * m_multiplier ) * m_frameRateMultiplier, ForceMode.Force);
+            if(Vector3.Distance(m_targetTransform.position, this.transform.position) >= m_ropeLength)
+            {
+                SetForce(CalculateForceDirection() * CalculateNetForce() * m_multiplier , ForceMode.Force);
+            }
         }
+        
     }
 
     public override void SetVariables()
@@ -82,10 +95,5 @@ public class PendulumScript : CustomPhysicsBase
         return a;
     }
 
-    void DrawDebugLines()
-    {
-        Debug.DrawLine(this.gameObject.transform.position, m_targetTransform.position, Color.blue);
-        Debug.DrawLine(Vector3.zero, Vector3.up * 50, Color.red);
-
-    }
+   
 }
