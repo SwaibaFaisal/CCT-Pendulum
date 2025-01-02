@@ -1,23 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
-
+using Unity.VisualScripting.Dependencies.Sqlite;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+
 
 public class PendulumScript : CustomPhysicsBase
 {
     [SerializeField] Transform m_targetTransform;
 
+
     #region inspector variables
-    [SerializeField] float m_angleBetweenPoints;
-    [SerializeField] float m_timeMultiplier;
+
+    [Header("Values")]
+    /*public float m_angleBetweenPoints;*/
+
     
     [SerializeField] float m_multiplier;
     [SerializeField] bool m_HigherTimeStep;
     [Tooltip("Fixed Delta Time value. Default value is set to 1/50, reccomended value is 1/60")]
-    [SerializeField] float m_AlternateTimeStepValue;
+    [SerializeField] [Min(1/60f)] float m_AlternateTimeStepValue;
     [SerializeField] bool m_isSwinging;
-
+    private int x;
 
     #endregion
 
@@ -27,6 +32,7 @@ public class PendulumScript : CustomPhysicsBase
     Vector3 m_directionFacingPivot;
     #endregion
 
+    
 
     public override void Awake()
     {
@@ -41,12 +47,12 @@ public class PendulumScript : CustomPhysicsBase
     // Update is called once per frame
     void FixedUpdate()
     {
-        float m_frameRateMultiplier = m_timeMultiplier * Time.deltaTime;
+       /* float m_frameRateMultiplier = m_timeMultiplier * Time.deltaTime;*/
         if(m_isSwinging)
         {
             if(Vector3.Distance(m_targetTransform.position, this.transform.position) >= m_ropeLength)
             {
-                SetForce(CalculateForceDirection() * CalculateNetForce() * m_multiplier , ForceMode.Force);
+                SetForce(CalculateForceDirection() * CalculateNetForce() * m_multiplier * m_multiplier , ForceMode.Force);
             }
         }
         
@@ -95,5 +101,17 @@ public class PendulumScript : CustomPhysicsBase
         return a;
     }
 
-   
+
+    #region getters and setters
+
+    public float Multiplier
+    {
+       get { return m_multiplier; }
+
+       set { m_multiplier = value; }
+    }
+
+
+    #endregion
+
 }
