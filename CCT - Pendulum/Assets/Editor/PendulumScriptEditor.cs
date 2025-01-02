@@ -19,6 +19,7 @@ public class PendulumScriptEditor : Editor
         {
             Debug.Log("BUTTON PRESSED");
             m_script.Multiplier = 1f;
+            m_script.CustomTimeStepValue = (float)1 / 60;
         }
 
 

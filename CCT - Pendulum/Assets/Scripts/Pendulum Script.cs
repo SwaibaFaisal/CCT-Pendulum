@@ -14,15 +14,15 @@ public class PendulumScript : CustomPhysicsBase
     #region inspector variables
 
     [Header("Values")]
-    /*public float m_angleBetweenPoints;*/
+   
 
     
     [SerializeField] float m_multiplier;
-    [SerializeField] bool m_HigherTimeStep;
+    [SerializeField] bool m_customTimeStep;
     [Tooltip("Fixed Delta Time value. Default value is set to 1/50, reccomended value is 1/60")]
-    [SerializeField] [Min(1/60f)] float m_AlternateTimeStepValue;
+    [SerializeField] [Min(1/60f)] float m_customTimeStepValue;
     [SerializeField] bool m_isSwinging;
-    private int x;
+ 
 
     #endregion
 
@@ -37,9 +37,9 @@ public class PendulumScript : CustomPhysicsBase
     public override void Awake()
     {
         base.Awake();
-        if ( m_HigherTimeStep ) 
+        if ( m_customTimeStep ) 
         {
-            Time.fixedDeltaTime = m_AlternateTimeStepValue;
+            Time.fixedDeltaTime = m_customTimeStepValue;
         }
         SetVariables();
     }
@@ -52,7 +52,7 @@ public class PendulumScript : CustomPhysicsBase
         {
             if(Vector3.Distance(m_targetTransform.position, this.transform.position) >= m_ropeLength)
             {
-                SetForce(CalculateForceDirection() * CalculateNetForce() * m_multiplier * m_multiplier , ForceMode.Force);
+                SetForce(CalculateForceDirection() * CalculateNetForce() * m_multiplier  , ForceMode.Force);
             }
         }
         
@@ -109,9 +109,21 @@ public class PendulumScript : CustomPhysicsBase
        get { return m_multiplier; }
 
        set { m_multiplier = value; }
+
     }
 
+    public float CustomTimeStepValue
+    {
+        get { return m_customTimeStepValue; }
 
+        set { m_customTimeStepValue = value; }
+    }
+
+    public bool isSwinging
+    {
+        get { return m_isSwinging; }
+        set { m_isSwinging = value;}
+    }
     #endregion
 
 }
