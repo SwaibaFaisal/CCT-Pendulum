@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-
+[RequireComponent(typeof(PendulumDebugging))]
 public class PendulumScript : CustomPhysicsBase
 {
     [SerializeField] Transform m_targetTransform;
@@ -94,9 +94,8 @@ public class PendulumScript : CustomPhysicsBase
 
     public float Multiplier { get { return m_multiplier; } set { m_multiplier = value; }}
 
-
-    public bool isSwinging
-    { get { return m_isSwinging; } set { m_isSwinging = value;}}
+    public Transform TargetTransform { get { return m_targetTransform; } set { m_targetTransform = value; }}
+    public bool isSwinging { get { return m_isSwinging; } set { m_isSwinging = value;}}
     #endregion
 
 }
