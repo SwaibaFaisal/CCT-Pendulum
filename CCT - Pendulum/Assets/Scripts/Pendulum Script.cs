@@ -14,13 +14,7 @@ public class PendulumScript : CustomPhysicsBase
     #region inspector variables
 
     [Header("Values")]
-   
-
-    
     [SerializeField] float m_multiplier;
-    [SerializeField] bool m_customTimeStep;
-    [Tooltip("Fixed Delta Time value. Default value is set to 1/50, reccomended value is 1/60")]
-    [SerializeField] [Min(1/60f)] float m_customTimeStepValue;
     [SerializeField] bool m_isSwinging;
  
 
@@ -37,10 +31,6 @@ public class PendulumScript : CustomPhysicsBase
     public override void Awake()
     {
         base.Awake();
-        if ( m_customTimeStep ) 
-        {
-            Time.fixedDeltaTime = m_customTimeStepValue;
-        }
         SetVariables();
     }
 
@@ -50,9 +40,10 @@ public class PendulumScript : CustomPhysicsBase
        /* float m_frameRateMultiplier = m_timeMultiplier * Time.deltaTime;*/
         if(m_isSwinging)
         {
+            //if the object is at the end of the "rope"
             if(Vector3.Distance(m_targetTransform.position, this.transform.position) >= m_ropeLength)
             {
-                SetForce(CalculateForceDirection() * CalculateNetForce() * m_multiplier  , ForceMode.Force);
+                SetForce(CalculateForceDirection() * CalculateNetForce(), ForceMode.Force);
             }
         }
         
@@ -64,8 +55,6 @@ public class PendulumScript : CustomPhysicsBase
         m_startPosition = this.transform.position;
         m_ropeLength = Vector3.Distance( m_targetTransform.position, this.transform.position);
     }
-
-
 
     float CalculateAngle()
     {
@@ -96,7 +85,6 @@ public class PendulumScript : CustomPhysicsBase
 
     Vector3 CalculateForceDirection()
     {
-
         Vector3 a = (m_targetTransform.position - this.transform.position).normalized;
         return a;
     }
@@ -104,26 +92,11 @@ public class PendulumScript : CustomPhysicsBase
 
     #region getters and setters
 
-    public float Multiplier
-    {
-       get { return m_multiplier; }
+    public float Multiplier { get { return m_multiplier; } set { m_multiplier = value; }}
 
-       set { m_multiplier = value; }
-
-    }
-
-    public float CustomTimeStepValue
-    {
-        get { return m_customTimeStepValue; }
-
-        set { m_customTimeStepValue = value; }
-    }
 
     public bool isSwinging
-    {
-        get { return m_isSwinging; }
-        set { m_isSwinging = value;}
-    }
+    { get { return m_isSwinging; } set { m_isSwinging = value;}}
     #endregion
 
 }
