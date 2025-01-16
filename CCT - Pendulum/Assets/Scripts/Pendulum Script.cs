@@ -8,6 +8,7 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(PendulumDebugging))]
 public class PendulumScript : CustomPhysicsBase
 {
+    [Header("Pivot Transform")]
     [SerializeField] Transform m_targetTransform;
 
 
@@ -16,6 +17,7 @@ public class PendulumScript : CustomPhysicsBase
     [Header("Values")]
     [SerializeField] float m_multiplier;
     [SerializeField] bool m_isSwinging;
+    [SerializeField] float m_maxForce;
  
 
     #endregion
@@ -43,7 +45,10 @@ public class PendulumScript : CustomPhysicsBase
             //if the object is at the end of the "rope"
             if(Vector3.Distance(m_targetTransform.position, this.transform.position) >= m_ropeLength)
             {
-                SetForce(CalculateForceDirection() * CalculateNetForce(), ForceMode.Force);
+                Vector3 _force = ClampForce(CalculateNetForce(), m_maxForce) * CalculateForceDirection();
+                //Vector3 _force =  CalculateNetForce() * CalculateForceDirection();
+                print(_force);
+                SetForce(_force, ForceMode.Force);
             }
         }
         
@@ -56,6 +61,7 @@ public class PendulumScript : CustomPhysicsBase
         m_ropeLength = Vector3.Distance( m_targetTransform.position, this.transform.position);
     }
 
+    #region math functions
     float CalculateAngle()
     {
         float _angle = Vector3.Angle(this.transform.position - m_targetTransform.position, Physics.gravity.normalized);
@@ -89,13 +95,17 @@ public class PendulumScript : CustomPhysicsBase
         return a;
     }
 
+    float ClampForce(float _value, float _maxValue)
+    {
+        float x = Mathf.Clamp(_value, -_maxValue, _maxValue);
+        return x;
+    }
+    #endregion 
 
     #region getters and setters
-
     public float Multiplier { get { return m_multiplier; } set { m_multiplier = value; }}
-
     public Transform TargetTransform { get { return m_targetTransform; } set { m_targetTransform = value; }}
-    public bool isSwinging { get { return m_isSwinging; } set { m_isSwinging = value;}}
+    public bool IsSwinging { get { return m_isSwinging; } set { m_isSwinging = value;}}
     #endregion
 
 }

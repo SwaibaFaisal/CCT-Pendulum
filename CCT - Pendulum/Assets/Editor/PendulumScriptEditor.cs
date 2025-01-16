@@ -28,7 +28,7 @@ public class PendulumScriptEditor : Editor
             //booleans
             m_script.Interpolate = true;
             m_script.CustomTimeStep = false;
-
+            m_script.IsSwinging = true;
         }
 
 
