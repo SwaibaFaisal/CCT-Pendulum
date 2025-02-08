@@ -15,7 +15,7 @@ public class PendulumScript : CustomPhysicsBase
     #region inspector variables
 
     [Header("Values")]
-    [SerializeField] float m_multiplier;
+    /*[SerializeField]*/ float m_multiplier;
     [SerializeField] bool m_isSwinging;
     [SerializeField] float m_maxForce;
  
@@ -106,6 +106,8 @@ public class PendulumScript : CustomPhysicsBase
     public float Multiplier { get { return m_multiplier; } set { m_multiplier = value; }}
     public Transform TargetTransform { get { return m_targetTransform; } set { m_targetTransform = value; }}
     public bool IsSwinging { get { return m_isSwinging; } set { m_isSwinging = value;}}
+
+    public float MaxForce { get { return m_maxForce; } set { m_maxForce = value; }}
     #endregion
 
 }

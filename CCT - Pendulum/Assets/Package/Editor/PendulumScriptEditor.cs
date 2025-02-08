@@ -15,15 +15,16 @@ public class PendulumScriptEditor : Editor
     public override void OnInspectorGUI()
     {
         m_script = (PendulumScript)target;
-        //think about whether adding buttons for more specific things would be useful !!!
+
         if (GUILayout.Button("Default Values"))
         {
-            Debug.Log("BUTTON PRESSED");
 
             //values
             m_script.Mass = 1f;
             m_script.Multiplier = 1f;
             m_script.CustomTimeStepValue = (float)1 / 60;
+            m_script.MaxForce = 40f;
+            m_script.Drag = 0f;
 
             //booleans
             m_script.Interpolate = true;

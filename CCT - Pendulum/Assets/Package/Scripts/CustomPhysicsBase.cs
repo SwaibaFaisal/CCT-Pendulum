@@ -7,7 +7,7 @@ public class CustomPhysicsBase : MonoBehaviour
 {
     protected Rigidbody m_rigidBody;
     [SerializeField] float m_mass;
-    [SerializeField] float m_gravityScale;
+    [SerializeField] float m_drag;
     [SerializeField] bool m_interpolate;
     [SerializeField] bool m_customTimeStep;
     [Tooltip("Fixed Delta Time value. Default value is set to 1/50, reccomended value is 1/60")]
@@ -21,6 +21,7 @@ public class CustomPhysicsBase : MonoBehaviour
     public virtual void SetVariables()
     {
         m_rigidBody.mass = m_mass;
+        m_rigidBody.drag = m_drag;
         if(m_interpolate) 
         {
             m_rigidBody.interpolation = RigidbodyInterpolation.Interpolate;
@@ -42,6 +43,8 @@ public class CustomPhysicsBase : MonoBehaviour
     public bool Interpolate { get { return m_interpolate; } set { m_interpolate = value; }}
     public float CustomTimeStepValue { get { return m_customTimeStepValue; } set { m_customTimeStepValue = value; }}
     public bool CustomTimeStep { get { return m_customTimeStep; } set { m_customTimeStep = value; }}
+
+    public float Drag { get { return m_drag; } set { m_drag = value; }}
 
     #endregion
 }
