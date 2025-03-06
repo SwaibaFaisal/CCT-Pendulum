@@ -10,6 +10,7 @@ public class PendulumScript : CustomPhysicsBase
 {
     [Header("Pivot Transform")]
     [SerializeField] Transform m_targetTransform;
+    Transform m_newTargetTransform;
 
 
     #region inspector variables
@@ -17,7 +18,11 @@ public class PendulumScript : CustomPhysicsBase
     [Header("Values")]
     /*[SerializeField]*/ float m_multiplier;
     [SerializeField] bool m_isSwinging;
-    [SerializeField] float m_maxForce;
+
+    // min max values, made public so they can be passed by reference
+    public float m_maxForce;
+    public float m_minForce;
+    
  
 
     #endregion
@@ -45,7 +50,9 @@ public class PendulumScript : CustomPhysicsBase
             //if the object is at the end of the "rope"
             if(Vector3.Distance(m_targetTransform.position, this.transform.position) >= m_ropeLength)
             {
-                Vector3 _force = ClampForce(CalculateNetForce(), m_maxForce) * CalculateForceDirection();
+                Vector3 _force =  (Mathf.Clamp(CalculateNetForce(), m_minForce, m_maxForce)) * CalculateForceDirection();
+
+              
                 //Vector3 _force =  CalculateNetForce() * CalculateForceDirection();
                 print(_force);
                 SetForce(_force, ForceMode.Force);
@@ -58,7 +65,18 @@ public class PendulumScript : CustomPhysicsBase
     {
         base.SetVariables();
         m_startPosition = this.transform.position;
-        m_ropeLength = Vector3.Distance( m_targetTransform.position, this.transform.position);
+        m_ropeLength = Vector3.Distance(m_targetTransform.position, this.transform.position);
+    }
+
+    public void CheckForNewTarget()
+    {
+        
+    }
+
+    public void SetTargetVariables()
+    {
+        m_startPosition = this.transform.position;
+        m_ropeLength = Vector3.Distance(m_targetTransform.position, this.transform.position);
     }
 
     #region math functions
@@ -95,19 +113,17 @@ public class PendulumScript : CustomPhysicsBase
         return a;
     }
 
-    float ClampForce(float _value, float _maxValue)
-    {
-        float x = Mathf.Clamp(_value, -_maxValue, _maxValue);
-        return x;
-    }
+   
     #endregion 
 
     #region getters and setters
     public float Multiplier { get { return m_multiplier; } set { m_multiplier = value; }}
     public Transform TargetTransform { get { return m_targetTransform; } set { m_targetTransform = value; }}
+
+    public Transform NewTargetTransform { get { return m_newTargetTransform; } set { m_newTargetTransform = value; }}
     public bool IsSwinging { get { return m_isSwinging; } set { m_isSwinging = value;}}
 
-    public float MaxForce { get { return m_maxForce; } set { m_maxForce = value; }}
+    /*public float MaxForce { get { return m_maxForce; } set { m_maxForce = value; }}*/
     #endregion
 
 }
