@@ -8,7 +8,7 @@ public class CustomPhysicsBase : MonoBehaviour
     protected Rigidbody m_rigidBody;
     [SerializeField] float m_mass;
     [SerializeField] float m_drag;
-    [SerializeField] bool m_interpolate;
+    [SerializeField] [HideInInspector] bool m_interpolate;
     [SerializeField] bool m_customTimeStep;
     [Tooltip("Fixed Delta Time value. Default value is set to 1/50, reccomended value is 1/60")]
     [SerializeField][Min(1 / 60f)] float m_customTimeStepValue;

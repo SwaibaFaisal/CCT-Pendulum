@@ -5,7 +5,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+
 [RequireComponent(typeof(PendulumDebugging))]
+
 public class PendulumScript : CustomPhysicsBase
 {
     [Header("Pivot Transform")]
@@ -17,13 +19,12 @@ public class PendulumScript : CustomPhysicsBase
 
     [Header("Values")]
     /*[SerializeField]*/ float m_multiplier;
-    [SerializeField] bool m_isSwinging;
-
-    // min max values, made public so they can be passed by reference
-    public float m_maxForce;
-    public float m_minForce;
     
- 
+    [SerializeField] bool m_isSwinging;
+    [SerializeField] [HideInInspector] float m_testFloat;
+    // min max values, made public so they can be passed by reference
+    [HideInInspector] public float m_maxForce;
+    [HideInInspector] public float m_minForce;
 
     #endregion
 
@@ -50,11 +51,10 @@ public class PendulumScript : CustomPhysicsBase
             //if the object is at the end of the "rope"
             if(Vector3.Distance(m_targetTransform.position, this.transform.position) >= m_ropeLength)
             {
+                //clamp force
                 Vector3 _force =  (Mathf.Clamp(CalculateNetForce(), m_minForce, m_maxForce)) * CalculateForceDirection();
 
               
-                //Vector3 _force =  CalculateNetForce() * CalculateForceDirection();
-                print(_force);
                 SetForce(_force, ForceMode.Force);
             }
         }
@@ -122,6 +122,8 @@ public class PendulumScript : CustomPhysicsBase
 
     public Transform NewTargetTransform { get { return m_newTargetTransform; } set { m_newTargetTransform = value; }}
     public bool IsSwinging { get { return m_isSwinging; } set { m_isSwinging = value;}}
+
+    public float TestFloat { get { return m_testFloat; } set { m_testFloat = value; }}
 
     /*public float MaxForce { get { return m_maxForce; } set { m_maxForce = value; }}*/
     #endregion

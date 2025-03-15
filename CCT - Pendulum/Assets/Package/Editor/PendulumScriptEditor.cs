@@ -10,16 +10,24 @@ using System.Drawing.Printing;
 [CustomEditor(typeof(PendulumScript))]
 [ExecuteInEditMode]
 [CanEditMultipleObjects]
+
+[System.Serializable]
 public class PendulumScriptEditor : Editor
 {
     PendulumScript m_script;
     float a = 12;
     bool m_showInterpolateValue = false;
-   
+    bool m_swinging;
+  
+    private void OnEnable ()
+    {
+        m_script = (PendulumScript)target; 
+    }
+
 
     public override void OnInspectorGUI()
     {
-        m_script = (PendulumScript)target;      
+        this.serializedObject.Update();
 
         if (GUILayout.Button("Default Values"))
         {
@@ -36,21 +44,22 @@ public class PendulumScriptEditor : Editor
             m_script.CustomTimeStep = false;
             m_script.IsSwinging = true;
         }
+
+
         EditorGUILayout.LabelField("Minimum Force: ", m_script.m_minForce.ToString(), EditorStyles.boldLabel);
-        EditorGUILayout.LabelField("Maximum Force: ",m_script.m_maxForce.ToString(), EditorStyles.boldLabel);
-       
+        EditorGUILayout.LabelField("Maximum Force: ",m_script.m_maxForce.ToString(), EditorStyles.boldLabel);       
         EditorGUILayout.MinMaxSlider(ref m_script.m_minForce, ref m_script.m_maxForce, -100f, 100f);
-        base.OnInspectorGUI();
 
-       
-
-       
-        m_showInterpolateValue = GUILayout.Toggle(m_showInterpolateValue, "interpolate?");
-
-        if (m_showInterpolateValue)
+        m_script.Interpolate = GUILayout.Toggle(m_script.Interpolate, "interpolate???");
+        
+        if(m_script.Interpolate)
         {
-            EditorGUILayout.FloatField("Float test", a);
+            EditorGUILayout.FloatField("float", m_script.TestFloat);
         }
 
+      
+
+        base.OnInspectorGUI();
+        this.serializedObject.ApplyModifiedProperties();
     }
 }
