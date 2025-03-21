@@ -64,8 +64,7 @@ public class PendulumScript : CustomPhysicsBase
     public override void SetVariables()
     {
         base.SetVariables();
-        m_startPosition = this.transform.position;
-        m_ropeLength = Vector3.Distance(m_targetTransform.position, this.transform.position);
+        SetTargetVariables();
     }
 
     public void CheckForNewTarget()
