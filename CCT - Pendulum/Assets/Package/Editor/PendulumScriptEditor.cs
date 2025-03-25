@@ -54,7 +54,7 @@ public class PendulumScriptEditor : Editor
         
         if(m_script.Interpolate)
         {
-            EditorGUILayout.FloatField("float", m_script.TestFloat);
+           /* EditorGUILayout.FloatField("float", m_script.TestFloat);*/
         }
 
       

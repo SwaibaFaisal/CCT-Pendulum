@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 
 public class TestFunctions : MonoBehaviour
 {
 
     bool m_ispaused = false;
+    public UnityEvent m_startSwingEvent;
+    public UnityEvent m_endSwingEvent;
     public void OnQuitPressed(InputAction.CallbackContext _context)
     {
         if(_context.started)
@@ -34,6 +37,13 @@ public class TestFunctions : MonoBehaviour
 
     }
 
+    public void OnClickPressed(InputAction.CallbackContext _context)
+    {
+        if(_context.started)
+        {
+            m_startSwingEvent.Invoke();
+        }
+    }
 
 }
 

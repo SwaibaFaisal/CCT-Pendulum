@@ -64,7 +64,7 @@ public class PendulumScript : CustomPhysicsBase
     public override void SetVariables()
     {
         base.SetVariables();
-        SetTargetVariables();
+        StartSwing();
     }
 
     public void CheckForNewTarget()
@@ -76,6 +76,13 @@ public class PendulumScript : CustomPhysicsBase
     {
         m_startPosition = this.transform.position;
         m_ropeLength = Vector3.Distance(m_targetTransform.position, this.transform.position);
+    }
+
+
+    public void StartSwing()
+    {
+        m_isSwinging = true;
+        SetTargetVariables();
     }
 
     #region math functions
