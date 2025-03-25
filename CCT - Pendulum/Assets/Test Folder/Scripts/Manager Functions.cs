@@ -10,6 +10,8 @@ public class TestFunctions : MonoBehaviour
     bool m_ispaused = false;
     public UnityEvent m_startSwingEvent;
     public UnityEvent m_endSwingEvent;
+
+    PendulumScript m_pendulumScript;
     public void OnQuitPressed(InputAction.CallbackContext _context)
     {
         if(_context.started)
@@ -43,6 +45,14 @@ public class TestFunctions : MonoBehaviour
         {
             m_startSwingEvent.Invoke();
         }
+
+        if(_context.canceled)
+        {
+            m_endSwingEvent.Invoke();
+        }
+
+
+
     }
 
 }

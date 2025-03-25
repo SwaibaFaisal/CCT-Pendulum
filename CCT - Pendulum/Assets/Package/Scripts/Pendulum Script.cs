@@ -85,6 +85,11 @@ public class PendulumScript : CustomPhysicsBase
         SetTargetVariables();
     }
 
+    public void EndSwing()
+    {
+        m_isSwinging = false;
+    }
+
     #region math functions
     float CalculateAngle()
     {
