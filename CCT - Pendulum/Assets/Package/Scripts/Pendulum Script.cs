@@ -12,7 +12,7 @@ public class PendulumScript : CustomPhysicsBase
 {
     [Header("Pivot Transform")]
     [SerializeField] Transform m_targetTransform;
-    Transform m_newTargetTransform;
+    Vector3 m_currentTargetPoint;
 
 
     #region inspector variables
@@ -49,7 +49,7 @@ public class PendulumScript : CustomPhysicsBase
         if(m_isSwinging)
         {
             //if the object is at the end of the "rope"
-            if(Vector3.Distance(m_targetTransform.position, this.transform.position) >= m_ropeLength)
+            if(Vector3.Distance(m_currentTargetPoint, this.transform.position) >= m_ropeLength)
             {
                 //clamp force
                 Vector3 _force =  (Mathf.Clamp(CalculateNetForce(), m_minForce, m_maxForce)) * CalculateForceDirection();
@@ -64,7 +64,7 @@ public class PendulumScript : CustomPhysicsBase
     public override void SetVariables()
     {
         base.SetVariables();
-        StartSwing();
+        
     }
 
     public void CheckForNewTarget()
@@ -72,17 +72,24 @@ public class PendulumScript : CustomPhysicsBase
         
     }
 
-    public void SetTargetVariables()
+    public void SetTargetVariables(Vector3 _targetPosition)
     {
         m_startPosition = this.transform.position;
-        m_ropeLength = Vector3.Distance(m_targetTransform.position, this.transform.position);
+        m_ropeLength = Vector3.Distance(_targetPosition, this.transform.position);
     }
 
+    public void ClearTargetVariables()
+    {
+        m_startPosition = Vector2.zero;
+        m_ropeLength = 0f;
+        m_targetTransform = null;
+    }
 
-    public void StartSwing()
+    public void StartSwing(Vector3 _targetPosition)
     {
         m_isSwinging = true;
-        SetTargetVariables();
+        m_currentTargetPoint = _targetPosition;
+        SetTargetVariables(_targetPosition);
     }
 
     public void EndSwing()
@@ -93,7 +100,7 @@ public class PendulumScript : CustomPhysicsBase
     #region math functions
     float CalculateAngle()
     {
-        float _angle = Vector3.Angle(this.transform.position - m_targetTransform.position, Physics.gravity.normalized);
+        float _angle = Vector3.Angle(this.transform.position - m_currentTargetPoint, Physics.gravity.normalized);
         return Mathf.Deg2Rad * _angle;
     }
 
@@ -120,7 +127,7 @@ public class PendulumScript : CustomPhysicsBase
 
     Vector3 CalculateForceDirection()
     {
-        Vector3 a = (m_targetTransform.position - this.transform.position).normalized;
+        Vector3 a = (m_currentTargetPoint - this.transform.position).normalized;
         return a;
     }
 
@@ -131,7 +138,7 @@ public class PendulumScript : CustomPhysicsBase
     public float Multiplier { get { return m_multiplier; } set { m_multiplier = value; }}
     public Transform TargetTransform { get { return m_targetTransform; } set { m_targetTransform = value; }}
 
-    public Transform NewTargetTransform { get { return m_newTargetTransform; } set { m_newTargetTransform = value; }}
+    public Vector3 CurrentTargetPoint { get { return m_currentTargetPoint; } set { m_currentTargetPoint = value; }} 
     public bool IsSwinging { get { return m_isSwinging; } set { m_isSwinging = value;}}
 
     public float TestFloat { get { return m_testFloat; } set { m_testFloat = value; }}

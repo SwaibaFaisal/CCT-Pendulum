@@ -11,7 +11,7 @@ public class CustomPhysicsBase : MonoBehaviour
     [SerializeField] [HideInInspector] bool m_interpolate;
     [SerializeField] bool m_customTimeStep;
     [Tooltip("Fixed Delta Time value. The lower the number, the more times the FixedUpdate loop runs in a second. Default value is set to 1/50, reccomended value is 1/60")]
-    [SerializeField][Min(1 / 60f)] float m_customTimeStepValue;
+    [SerializeField] float m_customTimeStepValue;
 
     public virtual void Awake()
     {

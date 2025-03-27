@@ -34,7 +34,7 @@ public class PendulumScriptEditor : Editor
             //values
             m_script.Mass = 1f;
             m_script.Multiplier = 1f;
-            m_script.CustomTimeStepValue = (float)1 / 60;
+            m_script.CustomTimeStepValue = 0.0001f;
             m_script.m_maxForce = 40f;
             m_script.m_minForce = -40f;
             m_script.Drag = 0.1f;

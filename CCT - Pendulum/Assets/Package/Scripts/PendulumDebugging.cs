@@ -19,7 +19,7 @@ public class PendulumDebugging : MonoBehaviour
 
     public void Update()
     {
-        if(m_showDebugLine)
+        if(m_showDebugLine && m_script.IsSwinging)
         {
             DrawDebugLines();
         } 
@@ -32,7 +32,7 @@ public class PendulumDebugging : MonoBehaviour
     public void DrawDebugLines()
     {
         Vector3 _startPoint = this.transform.position;
-        Vector3 _endPosition = m_script.TargetTransform.position;
+        Vector3 _endPosition = m_script.CurrentTargetPoint;
 
         m_lineRenderer.SetPosition(0, _startPoint);
         m_lineRenderer.SetPosition(1, _endPosition);
