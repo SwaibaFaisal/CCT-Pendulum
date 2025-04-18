@@ -14,15 +14,16 @@ public class PendulumScript : CustomPhysicsBase
     [SerializeField] Transform m_targetTransform;
     Vector3 m_currentTargetPoint;
 
-
     #region inspector variables
 
     [Header("Values")]
-    /*[SerializeField]*/ float m_multiplier;
     
     [SerializeField] bool m_isSwinging;
     [SerializeField] [HideInInspector] float m_testFloat;
-    // min max values, made public so they can be passed by reference
+    [SerializeField] Vector3 m_startJumpForce;
+    [SerializeField] float m_swingSpeed;
+
+    // min max values, made public so they can be passed by reference for the editor script
     [HideInInspector] public float m_maxForce;
     [HideInInspector] public float m_minForce;
 
@@ -31,10 +32,7 @@ public class PendulumScript : CustomPhysicsBase
     #region private variables
     float m_ropeLength;
     Vector3 m_startPosition;
-    Vector3 m_directionFacingPivot;
     #endregion
-
-    
 
     public override void Awake()
     {
@@ -45,20 +43,16 @@ public class PendulumScript : CustomPhysicsBase
     // Update is called once per frame
     void FixedUpdate()
     {
-       /* float m_frameRateMultiplier = m_timeMultiplier * Time.deltaTime;*/
         if(m_isSwinging)
         {
             //if the object is at the end of the "rope"
             if(Vector3.Distance(m_currentTargetPoint, this.transform.position) >= m_ropeLength)
             {
-                //clamp force
-                Vector3 _force =  (Mathf.Clamp(CalculateNetForce(), m_minForce, m_maxForce)) * CalculateForceDirection();
+                m_rigidBody.AddForce(CalculateNetForce(), ForceMode.Force);
 
-              
-                SetForce(_force, ForceMode.Force);
+
             }
         }
-        
     }
 
     public override void SetVariables()
@@ -66,12 +60,6 @@ public class PendulumScript : CustomPhysicsBase
         base.SetVariables();
         
     }
-
-    public void CheckForNewTarget()
-    {
-        
-    }
-
     public void SetTargetVariables(Vector3 _targetPosition)
     {
         m_startPosition = this.transform.position;
@@ -87,14 +75,31 @@ public class PendulumScript : CustomPhysicsBase
 
     public void StartSwing(Vector3 _targetPosition)
     {
-        m_isSwinging = true;
         m_currentTargetPoint = _targetPosition;
         SetTargetVariables(_targetPosition);
+        m_isSwinging = true;
+        Jump();
     }
 
     public void EndSwing()
     {
         m_isSwinging = false;
+        /*ClearTargetVariables();*/
+        
+       
+    }
+
+    public void Jump()
+    {
+
+        Vector3 b = new Vector3(
+            CalculateForceDirection().x * m_startJumpForce.x,
+                CalculateForceDirection().y * m_startJumpForce.y,
+                CalculateForceDirection().z * m_startJumpForce.z);
+
+        m_rigidBody.velocity += b;
+
+
     }
 
     #region math functions
@@ -119,11 +124,24 @@ public class PendulumScript : CustomPhysicsBase
         return c;
     }
 
-    float CalculateNetForce()
+    Vector3 CalculateNetForce()
     {
-        float a = CalculateTensionForce() + CalculateCentripetalForce();
-        return a;
+        float _initialForce = CalculateTensionForce() + CalculateCentripetalForce();
+        //clamp force
+        float _clampedForce = (Mathf.Clamp(_initialForce, m_minForce, m_maxForce));
+
+        //apply direction 
+
+        Vector3 _forceWithDirection = _clampedForce * CalculateForceDirection();
+
+        //apply swing speed
+
+        Vector3 _forceFinal = _forceWithDirection * m_swingSpeed;
+
+        return _forceFinal ;
     }
+
+   
 
     Vector3 CalculateForceDirection()
     {
@@ -135,13 +153,17 @@ public class PendulumScript : CustomPhysicsBase
     #endregion 
 
     #region getters and setters
-    public float Multiplier { get { return m_multiplier; } set { m_multiplier = value; }}
+
     public Transform TargetTransform { get { return m_targetTransform; } set { m_targetTransform = value; }}
 
     public Vector3 CurrentTargetPoint { get { return m_currentTargetPoint; } set { m_currentTargetPoint = value; }} 
     public bool IsSwinging { get { return m_isSwinging; } set { m_isSwinging = value;}}
 
     public float TestFloat { get { return m_testFloat; } set { m_testFloat = value; }}
+
+    public Vector3 JumpForce { get { return m_startJumpForce; } set { m_startJumpForce = value; } }
+
+    public Rigidbody RigidBody { get { return m_rigidBody; } set { m_rigidBody = value; }}
 
     /*public float MaxForce { get { return m_maxForce; } set { m_maxForce = value; }}*/
     #endregion

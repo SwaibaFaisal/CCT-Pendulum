@@ -6,12 +6,19 @@ using UnityEngine;
 public class CustomPhysicsBase : MonoBehaviour
 {
     protected Rigidbody m_rigidBody;
+
+    [Header("RigidBody Component References")]
+
     [SerializeField] float m_mass;
     [SerializeField] float m_drag;
-    [SerializeField] [HideInInspector] bool m_interpolate;
-    [SerializeField] bool m_customTimeStep;
-    [Tooltip("Fixed Delta Time value. The lower the number, the more times the FixedUpdate loop runs in a second. Default value is set to 1/50, reccomended value is 1/60")]
-    [SerializeField] float m_customTimeStepValue;
+    [Tooltip("Smoothing effects of running physics between frames -> Overrides Rigidbody value ")]
+    [SerializeField] bool m_interpolate;
+
+
+    [SerializeField] bool m_useCustomTimeStep;
+    [Tooltip("Fixed Delta Time value. The lower the number, the more times the FixedUpdate loop runs in a second")]
+    [SerializeField] [Min(0.001f)] float m_customTimeStepValue;
+
 
     public virtual void Awake()
     {
@@ -26,23 +33,20 @@ public class CustomPhysicsBase : MonoBehaviour
         {
             m_rigidBody.interpolation = RigidbodyInterpolation.Interpolate;
         }
-        if (m_customTimeStep)
+        if (m_useCustomTimeStep)
         {
             Time.fixedDeltaTime = m_customTimeStepValue;
         }
     }
 
     
-    public virtual void SetForce(Vector3 _force, ForceMode _forceMode)
-    {
-        m_rigidBody.AddForce(_force, _forceMode);
-    }
+  
 
     #region getters and setters
     public float Mass { get { return m_mass; } set {  m_mass = value; }}
     public bool Interpolate { get { return m_interpolate; } set { m_interpolate = value; }}
     public float CustomTimeStepValue { get { return m_customTimeStepValue; } set { m_customTimeStepValue = value; }}
-    public bool CustomTimeStep { get { return m_customTimeStep; } set { m_customTimeStep = value; }}
+    public bool UseCustomTimeStep { get { return m_useCustomTimeStep; } set { m_useCustomTimeStep = value; }}
 
     public float Drag { get { return m_drag; } set { m_drag = value; }}
 

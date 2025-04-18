@@ -6,7 +6,6 @@ using UnityEngine.Events;
 
 public class TestFunctions : MonoBehaviour
 {
-
     bool m_ispaused = false;
   
     PendulumScript m_pendulumScript;
@@ -36,8 +35,6 @@ public class TestFunctions : MonoBehaviour
 
 
     }
-
-    
 
 }
 
