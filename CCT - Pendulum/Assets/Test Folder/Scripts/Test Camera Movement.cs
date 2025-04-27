@@ -19,7 +19,6 @@ public class TestCameraMovement : MonoBehaviour
     void Awake()
     {
         m_camera = this.GetComponent<Camera>();
-
     }
 
     // Update is called once per frame

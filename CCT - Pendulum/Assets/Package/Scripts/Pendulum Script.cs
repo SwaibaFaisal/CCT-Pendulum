@@ -21,7 +21,7 @@ public class PendulumScript : CustomPhysicsBase
     [SerializeField] bool m_isSwinging;
     [SerializeField] [HideInInspector] float m_testFloat;
     [SerializeField] Vector3 m_startJumpForce;
-    [SerializeField] float m_swingSpeed;
+    [SerializeField] [Range(0,10)] float m_swingSpeed;
 
     // min max values, made public so they can be passed by reference for the editor script
     [HideInInspector] public float m_maxForce;
@@ -164,6 +164,8 @@ public class PendulumScript : CustomPhysicsBase
     public Vector3 JumpForce { get { return m_startJumpForce; } set { m_startJumpForce = value; } }
 
     public Rigidbody RigidBody { get { return m_rigidBody; } set { m_rigidBody = value; }}
+
+    public float SwingSpeed { get { return m_swingSpeed; } set { m_swingSpeed = value; }}
 
     /*public float MaxForce { get { return m_maxForce; } set { m_maxForce = value; }}*/
     #endregion

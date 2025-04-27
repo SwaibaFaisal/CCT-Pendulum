@@ -47,8 +47,9 @@ public class CustomPhysicsBase : MonoBehaviour
     public bool Interpolate { get { return m_interpolate; } set { m_interpolate = value; }}
     public float CustomTimeStepValue { get { return m_customTimeStepValue; } set { m_customTimeStepValue = value; }}
     public bool UseCustomTimeStep { get { return m_useCustomTimeStep; } set { m_useCustomTimeStep = value; }}
-
     public float Drag { get { return m_drag; } set { m_drag = value; }}
+
+
 
     #endregion
 }
