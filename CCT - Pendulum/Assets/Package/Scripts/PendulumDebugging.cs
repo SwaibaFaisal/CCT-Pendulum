@@ -14,7 +14,7 @@ public class PendulumDebugging : MonoBehaviour
     {
         m_script = this.GetComponent<PendulumScript>();
         m_lineRenderer = this.GetComponent<LineRenderer>();
-        SetVariables();
+        m_lineRenderer.startWidth = m_debugLineWidth;
     }
 
     public void Update()
@@ -23,19 +23,25 @@ public class PendulumDebugging : MonoBehaviour
         {
             DrawDebugLines();
         } 
+        else
+        {
+            ClearDebugLines();
+        }
     }
 
-    void SetVariables()
-    {
-        m_lineRenderer.SetWidth(m_debugLineWidth, m_debugLineWidth);
-    }
     public void DrawDebugLines()
     {
+        m_lineRenderer.positionCount = 2;
         Vector3 _startPoint = this.transform.position;
         Vector3 _endPosition = m_script.CurrentTargetPoint;
 
         m_lineRenderer.SetPosition(0, _startPoint);
         m_lineRenderer.SetPosition(1, _endPosition);
+    }
+
+    void ClearDebugLines()
+    {
+        m_lineRenderer.positionCount = 0;
     }
 
 }

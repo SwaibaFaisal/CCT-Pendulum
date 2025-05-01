@@ -9,9 +9,10 @@ public class CustomPhysicsBase : MonoBehaviour
 
     [Header("RigidBody Component References")]
 
-    [SerializeField] float m_mass;
-    [SerializeField] float m_drag;
-    [Tooltip("Smoothing effects of running physics between frames -> Overrides Rigidbody value ")]
+    [SerializeField] [Range(0f, 10f)] float m_mass;
+    [SerializeField] [Range(0f,0.05f)]float m_drag;
+
+    [Tooltip("Turning on smoothes effects of running physics between frames -> Overrides Rigidbody value ")]
     [SerializeField] bool m_interpolate;
 
 

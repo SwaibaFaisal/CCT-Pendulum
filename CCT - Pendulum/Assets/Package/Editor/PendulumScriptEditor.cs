@@ -37,7 +37,7 @@ public class PendulumScriptEditor : Editor
             m_script.m_minForce = -100f;
             m_script.Drag = 0.001f;
             m_script.JumpForce = new Vector3(4,6,4);
-            m_script.SwingSpeed = 1f;
+            m_script.SwingSpeed = 1.5f;
 
             //booleans
             m_script.Interpolate = true;

@@ -21,7 +21,7 @@ public class PendulumScript : CustomPhysicsBase
     [SerializeField] bool m_isSwinging;
     [SerializeField] [HideInInspector] float m_testFloat;
     [SerializeField] Vector3 m_startJumpForce;
-    [SerializeField] [Range(0,10)] float m_swingSpeed;
+    [SerializeField] [Range(0,10)] float m_swingForceMultiplier;
 
     // min max values, made public so they can be passed by reference for the editor script
     [HideInInspector] public float m_maxForce;
@@ -49,8 +49,6 @@ public class PendulumScript : CustomPhysicsBase
             if(Vector3.Distance(m_currentTargetPoint, this.transform.position) >= m_ropeLength)
             {
                 m_rigidBody.AddForce(CalculateNetForce(), ForceMode.Force);
-
-
             }
         }
     }
@@ -99,7 +97,6 @@ public class PendulumScript : CustomPhysicsBase
 
         m_rigidBody.velocity += b;
 
-
     }
 
     #region math functions
@@ -111,14 +108,17 @@ public class PendulumScript : CustomPhysicsBase
 
     float CalculateCentripetalForce()
     {
-        float a = Mathf.Pow( (m_rigidBody.mass * m_rigidBody.velocity.magnitude), 2);
-        float b = a / m_ropeLength;
-        return b;
+        float a = m_rigidBody.mass;
+        float b = Mathf.Pow(m_rigidBody.velocity.magnitude, 2) * m_swingForceMultiplier;
+        float c = ( a * b )/ m_ropeLength;
+        return c;
     }
 
     float CalculateTensionForce()
     {
-        float a = m_rigidBody.mass * Physics.gravity.magnitude;
+        // F = mgCos(theta)
+
+        float a = m_rigidBody.mass * Physics.gravity.magnitude * m_swingForceMultiplier;
         float b = Mathf.Cos(CalculateAngle());
         float c = a * b;
         return c;
@@ -126,6 +126,8 @@ public class PendulumScript : CustomPhysicsBase
 
     Vector3 CalculateNetForce()
     {
+
+
         float _initialForce = CalculateTensionForce() + CalculateCentripetalForce();
         //clamp force
         float _clampedForce = (Mathf.Clamp(_initialForce, m_minForce, m_maxForce));
@@ -136,12 +138,11 @@ public class PendulumScript : CustomPhysicsBase
 
         //apply swing speed
 
-        Vector3 _forceFinal = _forceWithDirection * m_swingSpeed;
+        Vector3 _forceFinal = _forceWithDirection ;
+
 
         return _forceFinal ;
     }
-
-   
 
     Vector3 CalculateForceDirection()
     {
@@ -149,7 +150,6 @@ public class PendulumScript : CustomPhysicsBase
         return a;
     }
 
-   
     #endregion 
 
     #region getters and setters
@@ -165,7 +165,7 @@ public class PendulumScript : CustomPhysicsBase
 
     public Rigidbody RigidBody { get { return m_rigidBody; } set { m_rigidBody = value; }}
 
-    public float SwingSpeed { get { return m_swingSpeed; } set { m_swingSpeed = value; }}
+    public float SwingSpeed { get { return m_swingForceMultiplier; } set { m_swingForceMultiplier = value; }}
 
     /*public float MaxForce { get { return m_maxForce; } set { m_maxForce = value; }}*/
     #endregion

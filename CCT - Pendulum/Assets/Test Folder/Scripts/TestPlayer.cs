@@ -7,25 +7,91 @@ using Unity.VisualScripting;
 
 public class TestPlayer : MonoBehaviour
 {
+    [Header("References")]
 
     [SerializeField] PendulumScript m_script;
     [SerializeField] LayerMask m_targetLayer;
+    [SerializeField] LayerMask m_worldObjectLayer;
+
+
+    [Header("Movement Variables")]
     
     [SerializeField] float m_speed;
-    [SerializeField] float m_jumpForce;
-    [Tooltip("1 = full control, 0 = no control")]
-    [SerializeField] float m_airControl;
     float m_speedLocal;
+
+    [SerializeField] float m_jumpForce;
+    bool m_canJump;
     [SerializeField] float m_extraGravity;
     
-    bool m_lockHorizontal = false;
-    bool m_lockVertical = false;
-    bool m_canJump;
+    [Tooltip("1 = full control, 0 = no control")]
+    [SerializeField] float m_airControl;
 
+    [Header("Misc")]
+
+    [SerializeField] float m_respawnThreshold;
     float m_horizontalMoveForce;
     float m_verticalMoveForce;
+    Vector3 m_startPosition;
 
-    [SerializeField] LayerMask m_worldObjectLayer;
+ 
+    private void Start()
+    {
+        m_startPosition = m_script.transform.position;
+    }
+
+    public void Update()
+    {
+        m_script.RigidBody.velocity += new Vector3(m_horizontalMoveForce, 0, m_verticalMoveForce);
+
+        JumpCheck();
+
+        AirControlCheck();
+
+        RespawnCheck();
+
+    }
+
+    void Jump()
+    {
+        m_script.RigidBody.velocity += new Vector3(0, m_jumpForce, 0);
+    }
+
+    void AirControlCheck()
+    {
+        if (m_script.IsSwinging)
+        {
+            m_speedLocal = m_speed * m_airControl;
+        }
+        else
+        {
+            m_speedLocal = m_speed;
+        }
+    }
+
+    void JumpCheck()
+    {
+        if (Physics.Raycast(m_script.RigidBody.transform.position, Vector3.down, 0.8f, m_worldObjectLayer) || Physics.Raycast(m_script.RigidBody.transform.position, Vector3.down, 0.8f, m_targetLayer))
+        {
+            m_canJump = true;
+        }
+        else
+        {
+            m_canJump = false;
+
+            if (!m_script.IsSwinging)
+            {
+                m_script.RigidBody.velocity -= new Vector3(0, m_extraGravity, 0);
+            }
+        }
+    }
+    
+    void RespawnCheck()
+    {
+        if (m_script.transform.position.y <= m_respawnThreshold)
+        {
+            m_script.transform.SetPositionAndRotation(m_startPosition, Quaternion.identity);
+        }
+    }
 
     public void OnClickPressed(InputAction.CallbackContext _context)
     {
@@ -40,10 +106,7 @@ public class TestPlayer : MonoBehaviour
                 if(_hitData.collider != null)
                 {
                     m_script.StartSwing(_hitData.point);
-                    m_lockHorizontal = true;
-                    m_lockVertical = true;
                 }
-                
             }
             else
             {
@@ -55,8 +118,6 @@ public class TestPlayer : MonoBehaviour
         if(_context.canceled) 
         {
             m_script.EndSwing();
-            m_lockHorizontal = false;
-            m_lockVertical = false;
         }
 
     }
@@ -96,46 +157,5 @@ public class TestPlayer : MonoBehaviour
             Jump();
         }
     }
-
-    public void Update()
-    {
-        m_script.RigidBody.velocity += new Vector3(m_horizontalMoveForce, 0, m_verticalMoveForce);
-
-        if (Physics.Raycast(m_script.RigidBody.transform.position, Vector3.down, 0.8f, m_worldObjectLayer) || Physics.Raycast(m_script.RigidBody.transform.position, Vector3.down, 0.8f, m_targetLayer))
-        {
-            m_canJump = true;
-        }
-        else
-        {
-            m_canJump = false;
-
-            if(!m_script.IsSwinging)
-            {
-                m_script.RigidBody.velocity -= new Vector3(0, m_extraGravity, 0); 
-            }
-        }
-
-        if(m_script.IsSwinging)
-        {
-            m_speedLocal = m_speed * m_airControl;
-
-        }
-        else
-        {
-            m_speedLocal = m_speed;
-        }
-
-    }
-
-    public void FixedUpdate()
-    {
-       
-       
-    }
-    void Jump()
-    {
-        m_script.RigidBody.velocity += new Vector3(0, m_jumpForce, 0);
-    }
-
 
 }
