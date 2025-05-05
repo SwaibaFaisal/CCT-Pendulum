@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using Unity.VisualScripting;
 
-public class TestPlayer : MonoBehaviour
+public class CharacterControllerInterface : MonoBehaviour
 {
     [Header("References")]
 
@@ -24,7 +24,7 @@ public class TestPlayer : MonoBehaviour
     [SerializeField] float m_extraGravity;
     
     [Tooltip("1 = full control, 0 = no control")]
-    [SerializeField] float m_airControl;
+    [SerializeField] [Range(0,1)] float m_airControl;
 
     [Header("Misc")]
 
@@ -90,6 +90,7 @@ public class TestPlayer : MonoBehaviour
         if (m_script.transform.position.y <= m_respawnThreshold)
         {
             m_script.transform.SetPositionAndRotation(m_startPosition, Quaternion.identity);
+            m_script.RigidBody.velocity = Vector3.zero;
         }
     }
 

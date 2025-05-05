@@ -10,7 +10,6 @@ public class TestCameraMovement : MonoBehaviour
     [SerializeField] GameObject m_gameObjectToFollow;
     [SerializeField] Vector3 m_cameraPositionOffset;
 
-    [SerializeField] Vector2 m_cameraRotationSpeed;
 
     Vector2 m_cameraPitchYaw;
 

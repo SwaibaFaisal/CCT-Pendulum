@@ -9,16 +9,24 @@ public class CustomPhysicsBase : MonoBehaviour
 
     [Header("RigidBody Component References")]
 
+    [Tooltip("Mass -> Overrides RigidBody value")]
     [SerializeField] [Range(0f, 10f)] float m_mass;
+
+    [Tooltip("Drag -> Overrides Rigidbody value")]
     [SerializeField] [Range(0f,0.05f)]float m_drag;
 
-    [Tooltip("Turning on smoothes effects of running physics between frames -> Overrides Rigidbody value ")]
+    [Tooltip("Checking this smooths effects of running physics between frames -> Overrides RigidBody value ")]
     [SerializeField] bool m_interpolate;
 
+    [Header("Timestep Values")]
 
-    [SerializeField] bool m_useCustomTimeStep;
-    [Tooltip("Fixed Delta Time value. The lower the number, the more times the FixedUpdate loop runs in a second")]
-    [SerializeField] [Min(0.001f)] float m_customTimeStepValue;
+    [Space(5)]
+
+    [Tooltip("Checking this sets Time.FixedDeltaTime to the custom timestep value below -> Affects FixedUpdate loop for entire project!")]
+    [SerializeField] bool m_useCustomTimestep;
+
+    [Tooltip("Changes Fixed Delta Time value if ^^ is checked. The lower the value, the more times the FixedUpdate loop runs in a second (default value = 0.02)")]
+    [SerializeField] [Range(0.001f, 0.08f)] float m_customTimestepValue;
 
 
     public virtual void Awake()
@@ -28,26 +36,25 @@ public class CustomPhysicsBase : MonoBehaviour
 
     public virtual void SetVariables()
     {
+        //sets base physics variables 
         m_rigidBody.mass = m_mass;
         m_rigidBody.drag = m_drag;
         if(m_interpolate) 
         {
             m_rigidBody.interpolation = RigidbodyInterpolation.Interpolate;
         }
-        if (m_useCustomTimeStep)
+        if (m_useCustomTimestep)
         {
-            Time.fixedDeltaTime = m_customTimeStepValue;
+            Time.fixedDeltaTime = m_customTimestepValue;
         }
     }
-
-    
   
 
     #region getters and setters
     public float Mass { get { return m_mass; } set {  m_mass = value; }}
     public bool Interpolate { get { return m_interpolate; } set { m_interpolate = value; }}
-    public float CustomTimeStepValue { get { return m_customTimeStepValue; } set { m_customTimeStepValue = value; }}
-    public bool UseCustomTimeStep { get { return m_useCustomTimeStep; } set { m_useCustomTimeStep = value; }}
+    public float CustomTimeStepValue { get { return m_customTimestepValue; } set { m_customTimestepValue = value; }}
+    public bool UseCustomTimeStep { get { return m_useCustomTimestep; } set { m_useCustomTimestep = value; }}
     public float Drag { get { return m_drag; } set { m_drag = value; }}
 
 

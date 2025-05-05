@@ -1,37 +1,58 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 
-[RequireComponent(typeof(PendulumDebugging))]
+[RequireComponent(typeof(LineRenderer))]
 
 public class PendulumScript : CustomPhysicsBase
 {
-    [Header("Pivot Transform")]
-    [SerializeField] Transform m_targetTransform;
-    Vector3 m_currentTargetPoint;
-
     #region inspector variables
 
-    [Header("Values")]
-    
-    [SerializeField] bool m_isSwinging;
-    [SerializeField] [HideInInspector] float m_testFloat;
-    [SerializeField] Vector3 m_startJumpForce;
-    [SerializeField] [Range(0,10)] float m_swingForceMultiplier;
+    [Header("Pendulum Specific Values")]
 
-    // min max values, made public so they can be passed by reference for the editor script
-    [HideInInspector] public float m_maxForce;
-    [HideInInspector] public float m_minForce;
+    [Space(10)]
+
+    [Tooltip("Checking this causes bob to jump before swinging")]
+    [SerializeField] bool m_jumpOnStartSwing;
+    [Tooltip("The force the bob jumps at if ^^ has been checked")]
+    [SerializeField] Vector3 m_startJumpForce;
+
+    [Space(10)]
+
+    [Tooltip("Increases swing intensity, works well with cases where you want to gain momentum fast")]
+    [SerializeField] [Range(0.5f,10)] float m_swingForceMultiplier;
+
+    [Tooltip("The maximum force that can be applied to the simulation in any direction")]
+    [SerializeField] float m_maxForce;
+    [Tooltip("The minimum force that can be applied to the simulation in any direction")]
+    [SerializeField] float m_minForce;
+
+    [Space(5)]
+    [Tooltip("If checked, a line is drawn between the bob and the pivot")]
+    [SerializeField] bool m_showCord;
+    [Tooltip("If ^^ is checked, the width of the line between the bob and the pivot")]
+    [SerializeField] [Range(0,1)] float m_cordWidth = 0.1f;
+    [Tooltip("if show cord is checked, the colour gradient of the line between the bob and the pivot")]
+    [SerializeField] Gradient m_cordColourGradient;
+
 
     #endregion
 
     #region private variables
+
     float m_ropeLength;
     Vector3 m_startPosition;
+
+    LineRenderer m_lineRenderer;
+    Transform m_targetTransform;
+    Vector3 m_currentTargetPoint;
+    bool m_isSwinging;
+
+    private float m_pendulumForce;
+
     #endregion
 
     public override void Awake()
@@ -51,12 +72,43 @@ public class PendulumScript : CustomPhysicsBase
                 m_rigidBody.AddForce(CalculateNetForce(), ForceMode.Force);
             }
         }
+
+    }
+
+    void Update()
+    {
+        if (m_isSwinging)
+        {
+            DrawDebugLines();
+        }
+        else
+        {
+            ClearDebugLines();
+        }
+    }
+
+    public void DrawDebugLines()
+    {
+        m_lineRenderer.positionCount = 2;
+        Vector3 _startPoint = this.transform.position;
+        Vector3 _endPosition = m_currentTargetPoint;
+
+        m_lineRenderer.SetPosition(0, _startPoint);
+        m_lineRenderer.SetPosition(1, _endPosition);
+    }
+
+    public void ClearDebugLines()
+    {
+        m_lineRenderer.positionCount = 0;
     }
 
     public override void SetVariables()
     {
         base.SetVariables();
-        
+        m_lineRenderer = this.GetComponent<LineRenderer>();
+        m_lineRenderer.startWidth = m_cordWidth;
+        m_lineRenderer.colorGradient = m_cordColourGradient;
+
     }
     public void SetTargetVariables(Vector3 _targetPosition)
     {
@@ -69,6 +121,7 @@ public class PendulumScript : CustomPhysicsBase
         m_startPosition = Vector2.zero;
         m_ropeLength = 0f;
         m_targetTransform = null;
+        m_pendulumForce = 0f;
     }
 
     public void StartSwing(Vector3 _targetPosition)
@@ -76,15 +129,18 @@ public class PendulumScript : CustomPhysicsBase
         m_currentTargetPoint = _targetPosition;
         SetTargetVariables(_targetPosition);
         m_isSwinging = true;
-        Jump();
+
+        if(m_jumpOnStartSwing)
+        {
+            Jump();
+        }
+       
     }
 
     public void EndSwing()
     {
         m_isSwinging = false;
-        /*ClearTargetVariables();*/
-        
-       
+        ClearTargetVariables();
     }
 
     public void Jump()
@@ -108,20 +164,23 @@ public class PendulumScript : CustomPhysicsBase
 
     float CalculateCentripetalForce()
     {
-        float a = m_rigidBody.mass;
-        float b = Mathf.Pow(m_rigidBody.velocity.magnitude, 2) * m_swingForceMultiplier;
-        float c = ( a * b )/ m_ropeLength;
-        return c;
+        //F = m(v^2) / r
+
+        float _m = m_rigidBody.mass;
+        float _v2 = Mathf.Pow(m_rigidBody.velocity.magnitude, 2) * m_swingForceMultiplier;
+        float _finalForce = ( _m * _v2 )/ m_ropeLength;
+        return _finalForce;
     }
 
     float CalculateTensionForce()
     {
         // F = mgCos(theta)
 
-        float a = m_rigidBody.mass * Physics.gravity.magnitude * m_swingForceMultiplier;
-        float b = Mathf.Cos(CalculateAngle());
-        float c = a * b;
-        return c;
+        float _mg = m_rigidBody.mass * Physics.gravity.magnitude * m_swingForceMultiplier;
+        float _cosTheta = Mathf.Cos(CalculateAngle());
+        float _finalForce = _mg * _cosTheta;
+
+        return _finalForce;
     }
 
     Vector3 CalculateNetForce()
@@ -129,25 +188,24 @@ public class PendulumScript : CustomPhysicsBase
 
 
         float _initialForce = CalculateTensionForce() + CalculateCentripetalForce();
+
         //clamp force
+
         float _clampedForce = (Mathf.Clamp(_initialForce, m_minForce, m_maxForce));
+
+        m_pendulumForce = _clampedForce;
 
         //apply direction 
 
         Vector3 _forceWithDirection = _clampedForce * CalculateForceDirection();
 
-        //apply swing speed
-
-        Vector3 _forceFinal = _forceWithDirection ;
-
-
-        return _forceFinal ;
+        return _forceWithDirection ;
     }
 
     Vector3 CalculateForceDirection()
     {
-        Vector3 a = (m_currentTargetPoint - this.transform.position).normalized;
-        return a;
+        Vector3 _direction = (m_currentTargetPoint - this.transform.position).normalized;
+        return _direction;
     }
 
     #endregion 
@@ -157,9 +215,8 @@ public class PendulumScript : CustomPhysicsBase
     public Transform TargetTransform { get { return m_targetTransform; } set { m_targetTransform = value; }}
 
     public Vector3 CurrentTargetPoint { get { return m_currentTargetPoint; } set { m_currentTargetPoint = value; }} 
-    public bool IsSwinging { get { return m_isSwinging; } set { m_isSwinging = value;}}
 
-    public float TestFloat { get { return m_testFloat; } set { m_testFloat = value; }}
+    public bool IsSwinging { get { return m_isSwinging; } set { m_isSwinging = value;}}
 
     public Vector3 JumpForce { get { return m_startJumpForce; } set { m_startJumpForce = value; } }
 
@@ -167,7 +224,13 @@ public class PendulumScript : CustomPhysicsBase
 
     public float SwingSpeed { get { return m_swingForceMultiplier; } set { m_swingForceMultiplier = value; }}
 
-    /*public float MaxForce { get { return m_maxForce; } set { m_maxForce = value; }}*/
+    public float MaxForce { get { return m_maxForce; } set { m_maxForce = value; } }
+
+    public float MinForce { get { return m_minForce; } set { m_minForce = value; } }
+
+    public float PendulumForce { get { return m_pendulumForce;  } }
+
+    public bool JumpOnStartSwing { get { return m_jumpOnStartSwing; } set { m_jumpOnStartSwing = value; } }
     #endregion
 
 }

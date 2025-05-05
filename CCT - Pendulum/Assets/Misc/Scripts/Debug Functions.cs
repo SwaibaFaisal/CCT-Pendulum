@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class TestFunctions : MonoBehaviour
 {
@@ -34,6 +35,18 @@ public class TestFunctions : MonoBehaviour
         }
 
 
+    }
+
+    public void OnRestartPressed(int _scene)
+    {
+      
+            SceneManager.LoadScene(_scene);
+        
+    }
+
+    public void LoadNewScene(int _scene)
+    {
+        SceneManager.LoadScene(_scene);
     }
 
 }
